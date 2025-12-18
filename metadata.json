@@ -1,0 +1,8 @@
+{
+  "name": "Copy of freeLynk - iOS Style Social",
+  "description": "A feature-rich social media application with a sleek iOS dark-mode aesthetic featuring pink accents, real-time search, messaging, and post management under the freeLynk brand.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}

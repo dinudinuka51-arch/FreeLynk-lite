@@ -1,0 +1,106 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>freeLynk</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ios-pink: #FF2D55;
+            --ios-dark-bg: #000000;
+            --ios-card-bg: #1C1C1E;
+            --ios-border: rgba(255, 255, 255, 0.08);
+            --ios-secondary: #2C2C2E;
+        }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--ios-dark-bg);
+            color: #ffffff;
+            -webkit-tap-highlight-color: transparent;
+            overflow-x: hidden;
+            letter-spacing: -0.015em;
+        }
+        .ios-blur {
+            backdrop-filter: saturate(180%) blur(25px);
+            -webkit-backdrop-filter: saturate(180%) blur(25px);
+            background: rgba(10, 10, 10, 0.75);
+        }
+        .pink-gradient, .ios-gradient {
+            background: linear-gradient(135deg, #FF2D55 0%, #FF375F 100%);
+        }
+        .ios-input {
+            background: var(--ios-secondary);
+            border: 0.5px solid var(--ios-border);
+            border-radius: 14px;
+            color: white;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .ios-input:focus {
+            background: #3A3A3C;
+            border-color: var(--ios-pink);
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(255, 45, 85, 0.1);
+        }
+        .ios-card {
+            background: var(--ios-card-bg);
+            border: 0.5px solid var(--ios-border);
+            border-radius: 28px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .story-ring {
+            padding: 2.5px;
+            background: linear-gradient(45deg, #FF2D55, #FF9500); 
+            border-radius: 50%;
+        }
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .animate-slide-up {
+            animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .squircle-lg {
+            border-radius: 32px;
+        }
+        @keyframes pulse-pink {
+            0% { box-shadow: 0 0 0 0 rgba(255, 45, 85, 0.4); }
+            70% { box-shadow: 0 0 0 15px rgba(255, 45, 85, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 45, 85, 0); }
+        }
+        .pulse-active {
+            animation: pulse-pink 2s infinite;
+        }
+        @keyframes spin-slow {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .animate-spin-slow {
+            animation: spin-slow 8s linear infinite;
+        }
+    </style>
+<script type="importmap">
+{
+  "imports": {
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "react": "https://esm.sh/react@^19.2.3",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+    "@google/genai": "https://esm.sh/@google/genai@^1.34.0",
+    "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2.39.7"
+  }
+}
+</script>
+</head>
+<body>
+    <div id="root"></div>
+</body>
+</html>
