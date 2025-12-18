@@ -17,14 +17,23 @@ const App: React.FC = () => {
   const [viewingUserId, setViewingUserId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthPage, setIsAuthPage] = useState<'login' | 'signup'>('login');
+  const [initError, setInitError] = useState<string | null>(null);
 
   useEffect(() => {
     const checkUser = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session?.user) {
-        await fetchProfile(session.user.id);
+      try {
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        if (sessionError) throw sessionError;
+        
+        if (session?.user) {
+          await fetchProfile(session.user.id);
+        }
+      } catch (err: any) {
+        console.error("Initialization error:", err);
+        setInitError(err.message);
+      } finally {
+        setIsLoading(false);
       }
-      setIsLoading(false);
     };
 
     checkUser();
@@ -45,25 +54,29 @@ const App: React.FC = () => {
   }, []);
 
   const fetchProfile = async (dbId: string) => {
-    const { data, error } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', dbId)
-      .single();
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', dbId)
+        .single();
 
-    if (data && !error) {
-      setCurrentUser({
-        uid: data.uid,
-        dbId: data.id,
-        name: data.name,
-        email: '',
-        profilePhoto: data.profile_photo,
-        coverPhoto: data.cover_photo,
-        bio: data.bio,
-        joinedAt: new Date(data.created_at).getTime(),
-        followers: [],
-        following: []
-      });
+      if (data && !error) {
+        setCurrentUser({
+          uid: data.uid,
+          dbId: data.id,
+          name: data.name,
+          email: '',
+          profilePhoto: data.profile_photo,
+          coverPhoto: data.cover_photo,
+          bio: data.bio,
+          joinedAt: new Date(data.created_at).getTime(),
+          followers: [],
+          following: []
+        });
+      }
+    } catch (err) {
+      console.error("Profile fetch error:", err);
     }
   };
 
@@ -79,8 +92,24 @@ const App: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
-        <div className="w-10 h-10 border-4 border-blue-500/20 border-t-blue-500 rounded-full animate-spin"></div>
+      <div className="min-h-screen bg-black flex flex-col items-center justify-center gap-4">
+        <div className="w-12 h-12 border-4 border-[#FF2D55]/20 border-t-[#FF2D55] rounded-full animate-spin"></div>
+        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-600">Initializing Network</p>
+      </div>
+    );
+  }
+
+  if (initError && !currentUser) {
+    return (
+      <div className="min-h-screen bg-black flex flex-col items-center justify-center p-8 text-center">
+        <h2 className="text-[#FF2D55] text-xl font-black mb-2">Connection Error</h2>
+        <p className="text-zinc-500 text-sm mb-6">{initError}</p>
+        <button 
+          onClick={() => window.location.reload()}
+          className="pink-gradient px-8 py-3 rounded-2xl font-black uppercase tracking-widest text-xs"
+        >
+          Retry Connection
+        </button>
       </div>
     );
   }
@@ -106,14 +135,14 @@ const App: React.FC = () => {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-black pb-20 md:pb-0">
+    <div className="flex flex-col min-h-screen bg-black pb-20 md:pb-0 overflow-x-hidden">
       <Navbar 
         onLogout={handleLogout} 
         currentUser={currentUser} 
         onProfileClick={() => { setViewingUserId(currentUser.uid); setActiveTab('profile'); }} 
       />
       
-      <main className="flex-grow max-w-2xl mx-auto w-full pt-4">
+      <main className="flex-grow max-w-2xl mx-auto w-full pt-[60px]">
         {activeTab === 'feed' && (
           <Feed currentUser={currentUser} onNavigateToProfile={navigateToProfile} />
         )}

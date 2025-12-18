@@ -4,7 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>freeLynk</title>
+    <meta name="theme-color" content="#000000">
+    <title>freeLynk | iOS Social</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
@@ -12,7 +13,7 @@
             --ios-pink: #FF2D55;
             --ios-dark-bg: #000000;
             --ios-card-bg: #1C1C1E;
-            --ios-border: rgba(255, 255, 255, 0.08);
+            --ios-border: rgba(255, 255, 255, 0.1);
             --ios-secondary: #2C2C2E;
         }
         body {
@@ -24,31 +25,29 @@
             letter-spacing: -0.015em;
         }
         .ios-blur {
-            backdrop-filter: saturate(180%) blur(25px);
-            -webkit-backdrop-filter: saturate(180%) blur(25px);
-            background: rgba(10, 10, 10, 0.75);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            background: rgba(15, 15, 15, 0.7);
         }
-        .pink-gradient, .ios-gradient {
+        .pink-gradient {
             background: linear-gradient(135deg, #FF2D55 0%, #FF375F 100%);
         }
         .ios-input {
-            background: var(--ios-secondary);
-            border: 0.5px solid var(--ios-border);
-            border-radius: 14px;
+            background: rgba(28, 28, 30, 0.8);
+            border: 1px solid var(--ios-border);
+            border-radius: 12px;
             color: white;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.2s ease;
         }
         .ios-input:focus {
-            background: #3A3A3C;
             border-color: var(--ios-pink);
+            background: rgba(44, 44, 46, 1);
             outline: none;
-            box-shadow: 0 0 0 4px rgba(255, 45, 85, 0.1);
         }
         .ios-card {
             background: var(--ios-card-bg);
-            border: 0.5px solid var(--ios-border);
-            border-radius: 28px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border: 1px solid var(--ios-border);
+            border-radius: 24px;
         }
         .story-ring {
             padding: 2.5px;
@@ -56,37 +55,14 @@
             border-radius: 50%;
         }
         @keyframes slideUp {
-            from { transform: translateY(20px); opacity: 0; }
+            from { transform: translateY(30px); opacity: 0; }
             to { transform: translateY(0); opacity: 1; }
         }
         .animate-slide-up {
-            animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            animation: slideUp 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
         }
-        .hide-scrollbar::-webkit-scrollbar {
-            display: none;
-        }
-        .hide-scrollbar {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
-        .squircle-lg {
-            border-radius: 32px;
-        }
-        @keyframes pulse-pink {
-            0% { box-shadow: 0 0 0 0 rgba(255, 45, 85, 0.4); }
-            70% { box-shadow: 0 0 0 15px rgba(255, 45, 85, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(255, 45, 85, 0); }
-        }
-        .pulse-active {
-            animation: pulse-pink 2s infinite;
-        }
-        @keyframes spin-slow {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-        .animate-spin-slow {
-            animation: spin-slow 8s linear infinite;
-        }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 <script type="importmap">
 {
@@ -102,5 +78,7 @@
 </head>
 <body>
     <div id="root"></div>
+    <!-- CRITICAL: Added entry point script -->
+    <script type="module" src="./index.tsx"></script>
 </body>
 </html>
