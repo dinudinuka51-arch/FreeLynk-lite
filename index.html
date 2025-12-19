@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#000000">
-    <title>freeLynk | iOS Social</title>
+    <title>freeLynk | iOS Pink Social</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
@@ -13,7 +13,7 @@
             --ios-pink: #FF2D55;
             --ios-dark-bg: #000000;
             --ios-card-bg: #1C1C1E;
-            --ios-border: rgba(255, 255, 255, 0.1);
+            --ios-border: rgba(255, 255, 255, 0.08);
             --ios-secondary: #2C2C2E;
         }
         body {
@@ -27,22 +27,26 @@
         .ios-blur {
             backdrop-filter: saturate(180%) blur(20px);
             -webkit-backdrop-filter: saturate(180%) blur(20px);
-            background: rgba(15, 15, 15, 0.7);
+            background: rgba(10, 10, 12, 0.8);
         }
         .pink-gradient {
             background: linear-gradient(135deg, #FF2D55 0%, #FF375F 100%);
         }
+        .pink-glow {
+            box-shadow: 0 0 25px rgba(255, 45, 85, 0.4);
+        }
         .ios-input {
             background: rgba(28, 28, 30, 0.8);
             border: 1px solid var(--ios-border);
-            border-radius: 12px;
+            border-radius: 14px;
             color: white;
-            transition: all 0.2s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .ios-input:focus {
             border-color: var(--ios-pink);
             background: rgba(44, 44, 46, 1);
             outline: none;
+            box-shadow: 0 0 0 4px rgba(255, 45, 85, 0.1);
         }
         .ios-card {
             background: var(--ios-card-bg);
@@ -51,7 +55,7 @@
         }
         .story-ring {
             padding: 2.5px;
-            background: linear-gradient(45deg, #FF2D55, #FF9500); 
+            background: linear-gradient(45deg, #FF2D55, #FF375F, #FF9500); 
             border-radius: 50%;
         }
         @keyframes slideUp {
@@ -78,7 +82,6 @@
 </head>
 <body>
     <div id="root"></div>
-    <!-- CRITICAL: Added entry point script -->
     <script type="module" src="./index.tsx"></script>
 </body>
 </html>

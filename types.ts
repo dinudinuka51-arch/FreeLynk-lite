@@ -1,7 +1,7 @@
 
 export interface User {
   uid: string;
-  dbId?: string; // The UUID from Supabase profiles table
+  dbId?: string;
   name: string;
   email: string;
   password?: string;
@@ -9,42 +9,57 @@ export interface User {
   coverPhoto?: string;
   bio?: string;
   joinedAt: number;
-  followers: string[]; // Array of user UIDs
-  following: string[]; // Array of user UIDs
+  followers: string[];
+  following: string[];
+}
+
+export interface Comment {
+  id: string;
+  post_id: string;
+  user_id: string;
+  content: string;
+  created_at: string;
+  profiles?: {
+    name: string;
+    profile_photo: string;
+    uid: string;
+  };
 }
 
 export interface Post {
   id: string;
-  authorId: string;
-  authorName: string;
-  authorPhoto: string;
+  author_id: string;
   content: string;
   image?: string;
-  timestamp: number;
-  likes: number;
-  comments: number;
+  created_at: string;
+  likes_count?: number;
+  comments_count?: number;
+  profiles?: {
+    id: string;
+    name: string;
+    profile_photo: string;
+    uid: string;
+  };
 }
 
 export interface Message {
   id: string;
-  senderId: string;
-  receiverId: string;
-  text: string;
-  timestamp: number;
-}
-
-export interface ChatPreview {
-  userId: string;
-  lastMessage: string;
-  timestamp: number;
-  userName: string;
-  userPhoto: string;
+  sender_id: string;
+  receiver_id: string;
+  text?: string;
+  media_url?: string;
+  media_type?: 'text' | 'image' | 'audio';
+  created_at: string;
 }
 
 export interface Story {
   id: string;
-  userId: string;
-  userName: string;
-  userPhoto: string;
-  content: string; // image url
+  author_id: string;
+  media_url: string;
+  created_at: string;
+  profiles?: {
+    name: string;
+    profile_photo: string;
+    uid: string;
+  };
 }

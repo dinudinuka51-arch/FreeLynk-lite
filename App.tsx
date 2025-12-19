@@ -15,6 +15,7 @@ const App: React.FC = () => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [activeTab, setActiveTab] = useState<'feed' | 'search' | 'inbox' | 'profile'>('feed');
   const [viewingUserId, setViewingUserId] = useState<string | null>(null);
+  const [selectedChatUserId, setSelectedChatUserId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthPage, setIsAuthPage] = useState<'login' | 'signup'>('login');
   const [initError, setInitError] = useState<string | null>(null);
@@ -45,6 +46,7 @@ const App: React.FC = () => {
         setCurrentUser(null);
         setActiveTab('feed');
         setViewingUserId(null);
+        setSelectedChatUserId(null);
       }
     });
 
@@ -90,11 +92,16 @@ const App: React.FC = () => {
     setActiveTab('profile');
   };
 
+  const navigateToChat = (userId: string) => {
+    setSelectedChatUserId(userId);
+    setActiveTab('inbox');
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-black flex flex-col items-center justify-center gap-4">
         <div className="w-12 h-12 border-4 border-[#FF2D55]/20 border-t-[#FF2D55] rounded-full animate-spin"></div>
-        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-600">Initializing Network</p>
+        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-600">Syncing Identity</p>
       </div>
     );
   }
@@ -102,13 +109,13 @@ const App: React.FC = () => {
   if (initError && !currentUser) {
     return (
       <div className="min-h-screen bg-black flex flex-col items-center justify-center p-8 text-center">
-        <h2 className="text-[#FF2D55] text-xl font-black mb-2">Connection Error</h2>
+        <h2 className="text-[#FF2D55] text-xl font-black mb-2">Network Error</h2>
         <p className="text-zinc-500 text-sm mb-6">{initError}</p>
         <button 
           onClick={() => window.location.reload()}
-          className="pink-gradient px-8 py-3 rounded-2xl font-black uppercase tracking-widest text-xs"
+          className="pink-gradient px-8 py-3 rounded-2xl font-black uppercase tracking-widest text-xs text-white"
         >
-          Retry Connection
+          Reconnect
         </button>
       </div>
     );
@@ -150,7 +157,12 @@ const App: React.FC = () => {
           <Search currentUser={currentUser} onNavigateToProfile={navigateToProfile} />
         )}
         {activeTab === 'inbox' && (
-          <Inbox currentUser={currentUser} onNavigateToProfile={navigateToProfile} />
+          <Inbox 
+            currentUser={currentUser} 
+            onNavigateToProfile={navigateToProfile} 
+            initialChatUserId={selectedChatUserId}
+            onClearInitialChat={() => setSelectedChatUserId(null)}
+          />
         )}
         {activeTab === 'profile' && (
           <Profile 
@@ -158,6 +170,7 @@ const App: React.FC = () => {
             viewingUserId={viewingUserId || currentUser.uid}
             onUpdateUser={() => currentUser.dbId && fetchProfile(currentUser.dbId)}
             onLogout={handleLogout}
+            onMessageClick={navigateToChat}
           />
         )}
       </main>
