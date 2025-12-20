@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { User } from './types';
 import { supabase } from './lib/supabase';
 import Login from './pages/Login';
@@ -10,15 +10,53 @@ import Inbox from './pages/Inbox';
 import Profile from './pages/Profile';
 import Navbar from './components/Navbar';
 import TabBar from './components/TabBar';
+import AIEditor from './components/AIEditor';
 
 const App: React.FC = () => {
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [currentUser, setCurrentUser] = useState<User | null>(() => {
+    const cached = localStorage.getItem('fb_user_cache');
+    return cached ? JSON.parse(cached) : null;
+  });
   const [activeTab, setActiveTab] = useState<'feed' | 'search' | 'inbox' | 'profile'>('feed');
   const [viewingUserId, setViewingUserId] = useState<string | null>(null);
   const [selectedChatUserId, setSelectedChatUserId] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(!currentUser);
   const [isAuthPage, setIsAuthPage] = useState<'login' | 'signup'>('login');
   const [initError, setInitError] = useState<string | null>(null);
+  
+  // AI Studio trigger state
+  const [aiStudioConfig, setAiStudioConfig] = useState<{ isOpen: boolean, mode: 'artist' | 'movie' | 'vision' | 'voice' | 'thinker' | 'talker' | 'scribe' | 'fast' } | null>(null);
+
+  const fetchProfile = useCallback(async (dbId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', dbId)
+        .single();
+
+      if (data && !error) {
+        const userData: User = {
+          uid: data.uid,
+          dbId: data.id,
+          name: data.name,
+          email: '',
+          profilePhoto: data.profile_photo,
+          coverPhoto: data.cover_photo,
+          bio: data.bio,
+          joinedAt: new Date(data.created_at).getTime(),
+          followers: [],
+          following: []
+        };
+        setCurrentUser(userData);
+        localStorage.setItem('fb_user_cache', JSON.stringify(userData));
+      }
+    } catch (err) {
+      console.error("Profile fetch error:", err);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
     const checkUser = async () => {
@@ -28,11 +66,14 @@ const App: React.FC = () => {
         
         if (session?.user) {
           await fetchProfile(session.user.id);
+        } else {
+          setIsLoading(false);
+          setCurrentUser(null);
+          localStorage.removeItem('fb_user_cache');
         }
       } catch (err: any) {
         console.error("Initialization error:", err);
         setInitError(err.message);
-      } finally {
         setIsLoading(false);
       }
     };
@@ -44,47 +85,20 @@ const App: React.FC = () => {
         await fetchProfile(session.user.id);
       } else {
         setCurrentUser(null);
+        localStorage.removeItem('fb_user_cache');
         setActiveTab('feed');
-        setViewingUserId(null);
-        setSelectedChatUserId(null);
       }
     });
 
     return () => {
       authListener.subscription.unsubscribe();
     };
-  }, []);
-
-  const fetchProfile = async (dbId: string) => {
-    try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', dbId)
-        .single();
-
-      if (data && !error) {
-        setCurrentUser({
-          uid: data.uid,
-          dbId: data.id,
-          name: data.name,
-          email: '',
-          profilePhoto: data.profile_photo,
-          coverPhoto: data.cover_photo,
-          bio: data.bio,
-          joinedAt: new Date(data.created_at).getTime(),
-          followers: [],
-          following: []
-        });
-      }
-    } catch (err) {
-      console.error("Profile fetch error:", err);
-    }
-  };
+  }, [fetchProfile]);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
     setCurrentUser(null);
+    localStorage.removeItem('fb_user_cache');
   };
 
   const navigateToProfile = (uid: string) => {
@@ -97,11 +111,15 @@ const App: React.FC = () => {
     setActiveTab('inbox');
   };
 
-  if (isLoading) {
+  const openAiVoiceAssistant = () => {
+    setAiStudioConfig({ isOpen: true, mode: 'voice' });
+  };
+
+  if (isLoading && !currentUser) {
     return (
       <div className="min-h-screen bg-black flex flex-col items-center justify-center gap-4">
-        <div className="w-12 h-12 border-4 border-[#FF2D55]/20 border-t-[#FF2D55] rounded-full animate-spin"></div>
-        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-600">Syncing Identity</p>
+        <div className="w-10 h-10 border-4 border-[#FF2D55]/20 border-t-[#FF2D55] rounded-full animate-spin"></div>
+        <p className="text-[9px] font-black uppercase tracking-[0.3em] text-zinc-600">Connecting to Network</p>
       </div>
     );
   }
@@ -126,12 +144,12 @@ const App: React.FC = () => {
       <div className="bg-black min-h-screen">
         {isAuthPage === 'login' ? (
           <Login 
-            onLogin={(user) => setCurrentUser(user)} 
+            onLogin={(user) => { setCurrentUser(user); localStorage.setItem('fb_user_cache', JSON.parse(JSON.stringify(user))); }} 
             onToggle={() => setIsAuthPage('signup')} 
           />
         ) : (
           <Signup 
-            onSignup={(user) => setCurrentUser(user)} 
+            onSignup={(user) => { setCurrentUser(user); localStorage.setItem('fb_user_cache', JSON.parse(JSON.stringify(user))); }} 
             onToggle={() => setIsAuthPage('login')}
             onAddUser={() => {}} 
             users={[]}
@@ -154,7 +172,11 @@ const App: React.FC = () => {
           <Feed currentUser={currentUser} onNavigateToProfile={navigateToProfile} />
         )}
         {activeTab === 'search' && (
-          <Search currentUser={currentUser} onNavigateToProfile={navigateToProfile} />
+          <Search 
+            currentUser={currentUser} 
+            onNavigateToProfile={navigateToProfile} 
+            onOpenVoiceAssistant={openAiVoiceAssistant} 
+          />
         )}
         {activeTab === 'inbox' && (
           <Inbox 
@@ -174,6 +196,16 @@ const App: React.FC = () => {
           />
         )}
       </main>
+
+      {aiStudioConfig?.isOpen && (
+        <AIEditor 
+          currentUser={currentUser}
+          type="profile"
+          initialMode={aiStudioConfig.mode}
+          onClose={() => setAiStudioConfig(null)}
+          onSave={() => setAiStudioConfig(null)}
+        />
+      )}
 
       <TabBar activeTab={activeTab} setActiveTab={setActiveTab} />
     </div>

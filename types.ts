@@ -31,6 +31,7 @@ export interface Post {
   author_id: string;
   content: string;
   image?: string;
+  video?: string;
   created_at: string;
   likes_count?: number;
   comments_count?: number;
@@ -50,6 +51,7 @@ export interface Message {
   media_url?: string;
   media_type?: 'text' | 'image' | 'audio';
   created_at: string;
+  isOptimistic?: boolean;
 }
 
 export interface Story {

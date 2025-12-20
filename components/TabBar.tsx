@@ -30,7 +30,7 @@ const TabBar: React.FC<TabBarProps> = ({ activeTab, setActiveTab }) => {
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`flex flex-col items-center gap-1.5 transition-all duration-300 ${active ? 'text-[#FF2D55] scale-110' : 'text-zinc-600 hover:text-zinc-400'}`}
+            className={`flex flex-col items-center gap-1.5 transition-all duration-300 ${active ? 'text-[#007AFF] scale-110' : 'text-zinc-600 hover:text-zinc-400'}`}
           >
             <div className="transition-transform duration-300 active:scale-75 drop-shadow-lg">
               {tab.icon(active)}
@@ -39,7 +39,7 @@ const TabBar: React.FC<TabBarProps> = ({ activeTab, setActiveTab }) => {
               {tab.label}
             </span>
             {active && (
-              <div className="absolute -bottom-2 w-1 h-1 bg-[#FF2D55] rounded-full shadow-[0_0_8px_#FF2D55]"></div>
+              <div className="absolute -bottom-2 w-1 h-1 bg-[#007AFF] rounded-full shadow-[0_0_8px_#007AFF]"></div>
             )}
           </button>
         );
